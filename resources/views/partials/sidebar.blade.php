@@ -5,10 +5,10 @@
     </a>
 
     <!-- Sidebar -->
-    <div class="sidebar flex flex-col flex-1">
+    <div class="sidebar flex flex-col flex-1 justify-between">
         <!-- Sidebar Menu -->
         <nav class="mt-2 flex-1">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column h-full" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <a href="{{ url('/inicio') }}" class="nav-link {{ request()->is('inicio') ? 'active' : '' }}">
                         <i class="nav-icon fa fa-home"></i>
@@ -29,21 +29,24 @@
                         <p>Usuarios</p>
                     </a>
                 </li>
-
-                <!-- Logout button al fondo -->
-                <li class="nav-item bg-red-600 hover:bg-red-700 rounded">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="  text-white font-bold py-2 pl-4 ">
-                            <i class="fa fa-sign-out-alt mr-2 inline"></i>
-                        </button>
-                        <p class="inline text-white">Cerrar sesión</p>
-                    </form>
-                </li>
             </ul>
         </nav>
 
 
+        <!-- Logout button al fondo -->
+        <nav class="mb-2 ">
+            <ul class="nav nav-pills nav-sidebar flex-column h-full" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item bg-red-600 hover:bg-red-700 rounded bottom-0">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                        class="nav-link text-white text-left">
+                            <i class="nav-icon fa fa-sign-out-alt inline"></i>
+                            <p class="inline text-white">Cerrar sesión</p>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
     </div>
 </aside>
