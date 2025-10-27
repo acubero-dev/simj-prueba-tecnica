@@ -1,15 +1,18 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ControlController;
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect(route('inicio'));
 });
 
+// Rutas protegidas con auth
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Rutas de la aplicación
     Route::get('/inicio', function () {
         return view('inicio');
     })->name('inicio');
@@ -20,16 +23,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/usuarios', function () {
         return view('usuarios');
-    })->name('usuarios');
-});
+    })->name('usuarios')->middleware([IsAdmin::class]);
 
-// Rutas protegidas con auth
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Rutas de los Endpoints API
+    Route::get('/data/users', [UserController::class, 'list'])->middleware([IsAdmin::class])->name('data.users');
+    Route::post('/data/users', [UserController::class, 'create'])->middleware([IsAdmin::class])->name('data.users');
+    Route::put('/data/users', [UserController::class, 'update'])->middleware([IsAdmin::class])->name('data.users');
+    Route::delete('/data/users', [UserController::class, 'delete'])->middleware([IsAdmin::class])->name('data.users');
+
+    Route::get('/data/projects', [ProjectController::class, 'data'])->name('data.projects');
+    Route::get('/data/tasks', [TaskController::class, 'data'])->name('data.tasks');
+
 });
 
 require __DIR__.'/auth.php';
-

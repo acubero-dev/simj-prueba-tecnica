@@ -1,8 +1,28 @@
-
+// Bootstrap & AdminLTE
+import 'bootstrap';
 import 'admin-lte';
-import 'admin-lte/dist/js/adminlte.min.js';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import Alpine from 'alpinejs';
-window.Alpine = Alpine;
-Alpine.start();
+// JQuery y configuración AJAX
+import './ajax/jquery-setup';
+
+// SweetAlert2 para notificaciones
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
+window.Swal = Swal;
+window.Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true
+});
+
+
+// Logica AJAX
+import './ajax/users';
+
+// // Alpine.js
+// import Alpine from 'alpinejs';
+// window.Alpine = Alpine;
+// Alpine.start();
