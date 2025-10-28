@@ -1,13 +1,19 @@
-let currentPage = 1;
-let searchQuery = "";
+$(document).ready(function () {
+    let currentPage = 1;
+    let searchQuery = "";
 
-const fetchUsers = (page = 1) => {
-    currentPage = page;
-    $.get("/data/users", { page: page, search: searchQuery }, function (data) {
-        const tbody = $("#users-table-body");
-        tbody.empty();
-        data.data.forEach((user) => {
-            tbody.append(`
+    const modal = new bootstrap.Modal(document.getElementById("userModal"));
+
+    const fetchUsers = (page = 1) => {
+        currentPage = page;
+        $.get(
+            "/data/users",
+            { page: page, search: searchQuery },
+            function (data) {
+                const tbody = $("#users-table-body");
+                tbody.empty();
+                data.data.forEach((user) => {
+                    tbody.append(`
             <tr>
                 <td>${user.id}</td>
                 <td>${user.name}</td>
@@ -23,28 +29,30 @@ const fetchUsers = (page = 1) => {
                 </td>
             </tr>
         `);
-        });
+                });
 
-        // Paginación
-        const pagination = $("#pagination");
-        pagination.empty();
-        for (let i = 1; i <= data.last_page; i++) {
-            pagination.append(`
-                <li class="page-item ${i === data.current_page ? "active" : ""}">
+                // Paginación
+                const pagination = $("#pagination");
+                pagination.empty();
+                for (let i = 1; i <= data.last_page; i++) {
+                    pagination.append(`
+                <li class="page-item ${
+                    i === data.current_page ? "active" : ""
+                }">
                     <a class="page-link" href="#" data-page="${i}">${i}</a>
                 </li>
             `);
-        }
+                }
+            }
+        );
+    };
+
+    $(document).on("click", "#pagination .page-link", function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data("page"), 10) || 1;
+        fetchUsers(page);
     });
-};
 
-$(document).on('click', '#pagination .page-link', function (e) {
-    e.preventDefault();
-    const page = parseInt($(this).data('page'), 10) || 1;
-    fetchUsers(page);
-});
-
-$(document).ready(function () {
     fetchUsers();
 
     $("#search").on("input", function () {
@@ -55,7 +63,11 @@ $(document).ready(function () {
     $("#btn-add-user").click(function () {
         $("#userForm")[0].reset();
         $("#user_id").val("");
-        $("#userModal").modal("show");
+        modal.show();
+    });
+
+    $(document).on("click", ".btn-secondary", function () {
+        modal.hide();
     });
 
     $(document).on("click", ".btn-edit", function () {
@@ -67,7 +79,7 @@ $(document).ready(function () {
                 $("#name").val(user.name);
                 $("#email").val(user.email);
                 $("#is_admin").prop("checked", user.is_admin);
-                $("#userModal").modal("show");
+                modal.show();
             }
         });
     });
@@ -88,44 +100,57 @@ $(document).ready(function () {
                 is_admin: $("#is_admin").is(":checked") ? 1 : 0,
             },
             success: function () {
-                $("#userModal").modal("hide");
+                modal.hide();
                 fetchUsers(currentPage);
-                window.Toast?.fire({ icon: 'success', title: 'Usuario guardado' });
+                window.Toast?.fire({
+                    icon: "success",
+                    title: "Usuario guardado",
+                });
             },
             error: function (err) {
-                window.Toast?.fire({ icon: 'error', title: 'Error al guardar usuario' });
+                window.Toast?.fire({
+                    icon: "error",
+                    title: "Error al guardar usuario",
+                });
                 console.log(err);
             },
         });
     });
 
     $(document).on("click", ".btn-delete", function () {
-    const id = $(this).data("id");
+        const id = $(this).data("id");
 
-    window.Swal.fire({
-        title: '¿Seguro que quieres eliminar este usuario?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: "/data/users",
-                method: "DELETE",
-                data: { id },
-                success: function () {
-                    fetchUsers(currentPage);
-                    window.Toast?.fire({ icon: 'success', title: 'Usuario eliminado' });
-                },
-                error: function (err) {
-                    window.Swal?.fire({ icon: 'error', title: 'Error al eliminar usuario', text: err.responseJSON?.message || '' });
-                    console.log(err);
-                },
-            });
-        }
+        window.Swal.fire({
+            title: "¿Seguro que quieres eliminar este usuario?",
+            text: "Esta acción no se puede deshacer",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/data/users",
+                    method: "DELETE",
+                    data: { id },
+                    success: function () {
+                        fetchUsers(currentPage);
+                        window.Toast?.fire({
+                            icon: "success",
+                            title: "Usuario eliminado",
+                        });
+                    },
+                    error: function (err) {
+                        window.Swal?.fire({
+                            icon: "error",
+                            title: "Error al eliminar usuario",
+                            text: err.responseJSON?.message || "",
+                        });
+                        console.log(err);
+                    },
+                });
+            }
+        });
     });
-});
 });

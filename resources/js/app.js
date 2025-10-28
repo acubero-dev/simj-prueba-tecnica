@@ -1,6 +1,8 @@
 // Bootstrap & AdminLTE
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import 'admin-lte';
+
+window.bootstrap = bootstrap;
 
 // JQuery y configuración AJAX
 import './ajax/jquery-setup';
