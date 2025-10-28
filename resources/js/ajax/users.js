@@ -1,156 +1,169 @@
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", function () {
     let currentPage = 1;
     let searchQuery = "";
 
-    const modal = new bootstrap.Modal(document.getElementById("userModal"));
+    const modalEl = document.getElementById("userModal");
+    const modal = new bootstrap.Modal(modalEl);
+    const tbody = document.getElementById("users-table-body");
+    const paginationEl = document.getElementById("pagination");
+    const searchInput = document.getElementById("search");
+    const userForm = document.getElementById("userForm");
 
+    // Función para listar usuarios
     const fetchUsers = (page = 1) => {
         currentPage = page;
-        $.get(
-            "/data/users",
-            { page: page, search: searchQuery },
-            function (data) {
-                const tbody = $("#users-table-body");
-                tbody.empty();
-                data.data.forEach((user) => {
-                    tbody.append(`
-            <tr>
-                <td>${user.id}</td>
-                <td>${user.name}</td>
-                <td>${user.email}</td>
-                <td>${user.is_admin ? "Sí" : "No"}</td>
-                <td>
-                    <button class="btn btn-sm btn-edit" data-id="${
-                        user.id
-                    }">Editar</button>
-                    <button class="btn btn-sm btn-danger btn-delete" data-id="${
-                        user.id
-                    }">Eliminar</button>
-                </td>
-            </tr>
-        `);
+
+        const params = new URLSearchParams({ page, search: searchQuery });
+        fetch(`/data/users?${params}`)
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                data.data.forEach(user => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.is_admin ? "Sí" : "No"}</td>
+                        <td>
+                            <button class="btn btn-sm btn-edit" data-id="${user.id}">Editar</button>
+                            <button class="btn btn-sm btn-danger btn-delete" data-id="${user.id}">Eliminar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
                 });
 
                 // Paginación
-                const pagination = $("#pagination");
-                pagination.empty();
+                paginationEl.innerHTML = "";
                 for (let i = 1; i <= data.last_page; i++) {
-                    pagination.append(`
-                <li class="page-item ${
-                    i === data.current_page ? "active" : ""
-                }">
-                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                </li>
-            `);
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === data.current_page ? "active" : ""}`;
+                    li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationEl.appendChild(li);
                 }
-            }
-        );
+            })
+            .catch(err => console.error(err));
     };
 
-    $(document).on("click", "#pagination .page-link", function (e) {
-        e.preventDefault();
-        const page = parseInt($(this).data("page"), 10) || 1;
-        fetchUsers(page);
+    // Click en la paginación
+    paginationEl.addEventListener("click", function (e) {
+        if (e.target.matches(".page-link")) {
+            e.preventDefault();
+            const page = parseInt(e.target.dataset.page, 10) || 1;
+            fetchUsers(page);
+        }
     });
 
-    fetchUsers();
-
-    $("#search").on("input", function () {
-        searchQuery = $(this).val();
+    // Buscar usuarios
+    searchInput.addEventListener("input", function () {
+        searchQuery = this.value;
         fetchUsers();
     });
 
-    $("#btn-add-user").click(function () {
-        $("#userForm")[0].reset();
-        $("#user_id").val("");
+    // Abrir modal para crear usuario
+    document.getElementById("btn-add-user").addEventListener("click", () => {
+        userForm.reset();
+        document.getElementById("user_id").value = "";
         modal.show();
     });
 
-    $(document).on("click", ".btn-secondary", function () {
-        modal.hide();
+    // Cerrar modal con botón "Cancelar"
+    modalEl.addEventListener("click", function (e) {
+        if (e.target.classList.contains("btn-secondary")) {
+            modal.hide();
+        }
     });
 
-    $(document).on("click", ".btn-edit", function () {
-        const id = $(this).data("id");
-        $.get("/data/users", { page: 1, search: "" }, function (data) {
-            const user = data.data.find((u) => u.id == id);
-            if (user) {
-                $("#user_id").val(user.id);
-                $("#name").val(user.name);
-                $("#email").val(user.email);
-                $("#is_admin").prop("checked", user.is_admin);
-                modal.show();
-            }
-        });
+    // Editar usuario
+    tbody.addEventListener("click", function (e) {
+        if (e.target.closest(".btn-edit")) {
+            const id = e.target.closest(".btn-edit").dataset.id;
+
+            fetch(`/data/users?page=1&search=`)
+                .then(res => res.json())
+                .then(data => {
+                    const user = data.data.find(u => u.id == id);
+                    if (user) {
+                        document.getElementById("user_id").value = user.id;
+                        document.getElementById("name").value = user.name;
+                        document.getElementById("email").value = user.email;
+                        document.getElementById("is_admin").checked = user.is_admin;
+                        modal.show();
+                    }
+                });
+        }
     });
 
-    $("#userForm").submit(function (e) {
+    // Guardar usuario
+    userForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const id = $("#user_id").val();
+
+        const id = document.getElementById("user_id").value;
         const method = id ? "PUT" : "POST";
 
-        $.ajax({
-            url: "/data/users",
+        fetch("/data/users", {
             method: method,
-            data: {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
                 id: id,
-                name: $("#name").val(),
-                email: $("#email").val(),
-                password: $("#password").val(),
-                is_admin: $("#is_admin").is(":checked") ? 1 : 0,
-            },
-            success: function () {
-                modal.hide();
-                fetchUsers(currentPage);
-                window.Toast?.fire({
-                    icon: "success",
-                    title: "Usuario guardado",
-                });
-            },
-            error: function (err) {
-                window.Toast?.fire({
-                    icon: "error",
-                    title: "Error al guardar usuario",
-                });
-                console.log(err);
-            },
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                is_admin: document.getElementById("is_admin").checked ? 1 : 0
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            modal.hide();
+            fetchUsers(currentPage);
+            window.Toast?.fire({ icon: "success", title: "Usuario guardado" });
+        })
+        .catch(err => {
+            console.error(err);
+            window.Toast?.fire({ icon: "error", title: "Error al guardar usuario" });
         });
     });
 
-    $(document).on("click", ".btn-delete", function () {
-        const id = $(this).data("id");
+    // Eliminar usuario
+    tbody.addEventListener("click", function (e) {
+        if (e.target.closest(".btn-delete")) {
+            const id = e.target.closest(".btn-delete").dataset.id;
 
-        window.Swal.fire({
-            title: "¿Seguro que quieres eliminar este usuario?",
-            text: "Esta acción no se puede deshacer",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            reverseButtons: true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "/data/users",
-                    method: "DELETE",
-                    data: { id },
-                    success: function () {
+            window.Swal.fire({
+                title: "¿Seguro que quieres eliminar este usuario?",
+                text: "Esta acción no se puede deshacer",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true,
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch("/data/users", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ id })
+                    })
+                    .then(res => res.json())
+                    .then(() => {
                         fetchUsers(currentPage);
-                        window.Toast?.fire({
-                            icon: "success",
-                            title: "Usuario eliminado",
-                        });
-                    },
-                    error: function (err) {
-                        window.Swal?.fire({
-                            icon: "error",
-                            title: "Error al eliminar usuario",
-                            text: err.responseJSON?.message || "",
-                        });
-                        console.log(err);
-                    },
-                });
-            }
-        });
+                        window.Toast?.fire({ icon: "success", title: "Usuario eliminado" });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        window.Swal.fire({ icon: "error", title: "Error al eliminar usuario" });
+                    });
+                }
+            });
+        }
     });
+
+    // Cargar usuarios al inicio
+    fetchUsers();
 });

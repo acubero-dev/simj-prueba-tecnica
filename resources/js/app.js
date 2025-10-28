@@ -23,6 +23,7 @@ window.Toast = Swal.mixin({
 
 // Logica AJAX
 import './ajax/users';
+import './ajax/projects';
 
 // // Alpine.js
 // import Alpine from 'alpinejs';

@@ -31,9 +31,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/data/users', [UserController::class, 'update'])->middleware([IsAdmin::class])->name('data.users');
     Route::delete('/data/users', [UserController::class, 'delete'])->middleware([IsAdmin::class])->name('data.users');
 
-    Route::get('/data/projects', [ProjectController::class, 'data'])->name('data.projects');
-    Route::get('/data/tasks', [TaskController::class, 'data'])->name('data.tasks');
+    Route::get('/data/projects', [ProjectController::class, 'list'])->name('data.projects');
+    Route::post('/data/projects', [ProjectController::class, 'create'])->name('data.projects');
+    Route::put('/data/projects', [ProjectController::class, 'update'])->middleware([IsAdmin::class])->name('data.projects');
+    Route::delete('/data/projects', [ProjectController::class, 'delete'])->middleware([IsAdmin::class])->name('data.projects');
 
+    Route::get('/data/tasks', [TaskController::class, 'list'])->name('data.tasks');
+    Route::post('/data/tasks', [TaskController::class, 'create'])->name('data.tasks');
+    Route::put('/data/tasks', [TaskController::class, 'update'])->name('data.tasks');
+    Route::delete('/data/tasks', [TaskController::class, 'delete'])->name('data.tasks');
 });
 
 require __DIR__.'/auth.php';
