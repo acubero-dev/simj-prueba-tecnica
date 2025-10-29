@@ -9,42 +9,35 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function list(Request $request)
+    public function list()
     {
         $query = User::query();
-
-        // Filtro por búsqueda
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where('name', 'like', "%$search%")
-                ->orWhere('email', 'like', "%$search%");
-        }
 
         // Paginación
         $users = $query->orderBy('id', 'desc')->paginate(100);
 
-        return response()->json($users);
+        return response()->json($users, 200);
     }
 
     public function create(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:4',
             'is_admin' => 'sometimes|boolean',
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        $data['password'] = Hash::make($data['password']);
 
-        $user = User::create($validated);
+        $user = User::create($data);
 
         return response()->json($user, 201);
     }
 
     public function update(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($request->input('id'))],
@@ -52,29 +45,29 @@ class UserController extends Controller
             'is_admin' => 'sometimes|boolean',
         ]);
 
-        $user = User::findOrFail($validated['id']);
+        $user = User::findOrFail($data['id']);
 
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
+        $user->name = $data['name'];
+        $user->email = $data['email'];
 
-        if (! empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+        if (! empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
         }
-        if (isset($validated['is_admin'])) {
-            $user->is_admin = $validated['is_admin'];
+        if (isset($data['is_admin'])) {
+            $user->is_admin = $data['is_admin'];
         }
         $user->save();
 
-        return response()->json($user);
+        return response()->json($user, 200);    
     }
 
     public function delete(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'id' => 'required|exists:users,id',
         ]);
 
-        $user = User::findOrFail($validated['id']);
+        $user = User::findOrFail($data['id']);
         $user->delete();
 
         return response()->json(['message' => 'Usuario eliminado correctamente.']);

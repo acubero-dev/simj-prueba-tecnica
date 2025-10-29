@@ -53016,8 +53016,8 @@ a.text-muted:hover {
 /* Estilo para los botones "Editar" */
 .btn.btn-sm.btn-edit {
   background-color: #D2F801;
-  border-color: #B7D100; /* borde ligeramente más oscuro */
-  color: #0b0b00;        /* texto oscuro para contraste */
+  border-color: #B7D100;
+  color: #0b0b00;
   box-shadow: none;
 }
 
@@ -53032,4 +53032,13 @@ a.text-muted:hover {
   background-color: #B7D100;
   border-color: #8FB000;
   transform: translateY(1px);
+}
+
+/* Calendario */
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+}
+
+.fc-toolbar, .fc-toolbar.fc-header-toolbar {
+  padding: 0;
 }

@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     table.ajax.reload();
                     window.Toast?.fire({ icon: "success", title: "Usuario eliminado" });
                 })
-                .catch(() => {
+                .catch((e) => {
+                    console.error(e);
                     window.Swal.fire({ icon: "error", title: "Error al eliminar usuario" });
                 });
             }

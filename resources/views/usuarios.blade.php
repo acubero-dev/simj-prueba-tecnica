@@ -16,7 +16,7 @@
 
           <!-- Tabla -->
           <div class="table-responsive">
-            <table id="users-table" class="table table-bordered table-hover table-sm">
+            <table id="users-table" class="table table-bordered table-hover table-sm mb-3 mt-2">
               <thead class="table-light">
                 <tr>
                   <th>ID</th>
