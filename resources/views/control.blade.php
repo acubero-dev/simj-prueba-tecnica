@@ -40,4 +40,7 @@
     <!-- /Calendario -->
 
   </div>
+
+  <!-- Vite JS -->
+  @vite(['resources/js/ajax/projects.js'])
 @endsection

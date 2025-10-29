@@ -21,7 +21,7 @@ class UserController extends Controller
         }
 
         // Paginación
-        $users = $query->orderBy('id', 'desc')->paginate(5);
+        $users = $query->orderBy('id', 'desc')->paginate(100);
 
         return response()->json($users);
     }

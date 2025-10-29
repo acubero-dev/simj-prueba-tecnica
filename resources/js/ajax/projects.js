@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 projectsContainer.appendChild(div);
             });
 
-            // Después de renderizar proyectos, recarga el calendario
             renderCalendar(projects);
         } catch (err) {
             console.error("Error cargando proyectos:", err);
@@ -65,6 +64,5 @@ document.addEventListener("DOMContentLoaded", function () {
         calendar.render();
     };
 
-    // Inicializar
     fetchProjects();
 });
