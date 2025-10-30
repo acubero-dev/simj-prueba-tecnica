@@ -7,6 +7,10 @@ window.bootstrap = bootstrap;
 // JQuery y configuración AJAX
 import './ajax/jquery-setup';
 
+// select2
+import select2 from "select2";
+select2($);
+
 // SweetAlert2 para notificaciones
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';

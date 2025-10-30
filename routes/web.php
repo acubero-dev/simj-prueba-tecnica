@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('usuarios')->middleware([IsAdmin::class]);
 
     // Rutas de los Endpoints API
-    Route::get('/data/users', [UserController::class, 'list'])->middleware([IsAdmin::class])->name('data.users');
+    Route::get('/data/users', [UserController::class, 'list'])->name('data.users');
     Route::post('/data/users', [UserController::class, 'create'])->middleware([IsAdmin::class])->name('data.users');
     Route::put('/data/users', [UserController::class, 'update'])->middleware([IsAdmin::class])->name('data.users');
     Route::delete('/data/users', [UserController::class, 'delete'])->middleware([IsAdmin::class])->name('data.users');

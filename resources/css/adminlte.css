@@ -53042,3 +53042,32 @@ a.text-muted:hover {
 .fc-toolbar, .fc-toolbar.fc-header-toolbar {
   padding: 0;
 }
+
+
+
+/* Estilo para el calendario durante el arrastre */
+.calendar-drag-over {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+    border: 2px dashed #3b82f6 !important;
+}
+
+/* Estilo para elementos que se están arrastrando */
+.dragging {
+    opacity: 0.6;
+    transform: scale(0.98);
+    transition: all 0.2s ease;
+}
+
+/* Mejorar el cursor de arrastre */
+.cursor-move {
+    cursor: grab;
+}
+
+.cursor-move:active {
+    cursor: grabbing;
+}
+
+/* Feedback visual para celdas del calendario cuando se arrastra */
+.fc-highlight {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}

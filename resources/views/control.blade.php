@@ -34,6 +34,9 @@
         <div class="flex justify-between items-center pb-3 border-b mb-4">
           <h5 class="mb-0 text-lg font-semibold text-gray-700">Calendario de tareas</h5>
         </div>
+        <div>
+          <select name="users" id="users"></select>
+        </div>
         <div id="calendar" class="max-h-[600px]"></div>
       </div>
     </div>
@@ -67,12 +70,74 @@
   </div>
   <!-- Modal crear proyecto -->
 
+  <!-- Modal crear tarea -->
+  <div id="modal-create-task" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear nuevo tarea</h5>
+        </div>
+        <div class="modal-body">
+          <form id="form-create-task">
+            <div class="mb-3">              
+              <label for="start_at" class="form-label">Inicio tarea</label>
+              <input type="datetime-local" class="form-control" id="start_at" required>
+              
+              <label for="description" class="form-label">Descripción</label>
+              <input type="textarea" class="form-control" id="description" required>
+              
+              <label for="end_at" class="form-label">Fin tarea</label>
+              <input type="datetime-local" class="form-control" id="end_at" required>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <button type="submit" class="btn btn-primary">Guardar</button>
+              <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal crear tarea -->
 
+<!-- Modal crear pdf -->
+  <div id="modal-create-pdf" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Opciones de informe</h5>
+        </div>
+        <div class="modal-body">
+          <form id="form-create-pdf">
+            <div class="mb-3">              
+              <label for="start_at" class="form-label">Fecha desde</label>
+              <input type="date-local" class="form-control" id="start_at">
+
+              <label for="end_at" class="form-label">Fecha hasta</label>
+              <input type="date-local" class="form-control" id="end_at">
+
+              <label for="project" class="form-label">Proyecto</label>
+              <select name="project" id="project"></select>
+              
+              <label for="user" class="form-label">Usuario</label>
+              <select name="user" id="user"></select>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <button type="submit" class="btn btn-primary">Generar</button>
+              <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal crear pdf -->
 
 
   <!-- Variables JS -->
   <script>
       const IS_ADMIN = @json(auth()->user()?->is_admin);
+      const currentUserId = {{ auth()->id() }};
   </script>
 
   <!-- Vite JS -->
