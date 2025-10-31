@@ -117,10 +117,10 @@
               <input type="date" class="form-control" id="end_at">
 
               <label for="project" class="form-label">Proyecto</label>
-              <select name="project" id="project" class="form-control"></select>
+              <select name="project" id="project" required></select>
               
               <label for="user" class="form-label">Usuario</label>
-              <select name="user" id="user" class="form-control"></select>
+              <select name="user" id="user" required></select>
             </div>
             <div class="flex justify-end space-x-2">
               <button type="submit" class="btn btn-primary">Generar</button>

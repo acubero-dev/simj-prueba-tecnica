@@ -72,4 +72,55 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Tarea eliminada']);
     }
+
+
+    public function generatePdfData(Request $request)
+    {
+        $filters = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'project_id' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date'
+        ]);
+
+        $query = Task::with(['project', 'user'])
+                    ->where('user_id', $filters['user_id']);
+
+        if ($filters['project_id'] !== "all") {
+            $query->where('project_id', $filters['project_id']);
+        }
+
+        $query->whereDate('start_at', '>=', $filters['start_date']);
+        $query->whereDate('start_at', '<=', $filters['end_date']);
+
+        $tasks = $query->get();
+
+        // Formatear datos para el PDF - CONVERTIR a Carbon
+        $formattedTasks = $tasks->map(function($task) {
+            return [
+                'project' => $task->project->name,
+                'description' => $task->description,
+                'start_at' => \Carbon\Carbon::parse($task->start_at)->format('d/m/Y H:i'),
+                'end_at' => \Carbon\Carbon::parse($task->end_at)->format('d/m/Y H:i'),
+                'duration' => \Carbon\Carbon::parse($task->start_at)->diffInMinutes(\Carbon\Carbon::parse($task->end_at))
+            ];
+        });
+
+        // Calcular totales por proyecto - TAMBIÉN convertir a Carbon
+        $totals = [];
+        foreach ($tasks->groupBy('project_id') as $projectTasks) {
+            $projectName = $projectTasks->first()->project->name;
+            $totalMinutes = $projectTasks->sum(function($task) {
+                return \Carbon\Carbon::parse($task->start_at)->diffInMinutes(\Carbon\Carbon::parse($task->end_at));
+            });
+            $totals[$projectName] = $totalMinutes;
+        }
+
+        return response()->json([
+            'tasks' => $formattedTasks,
+            'totals' => $totals
+        ]);
+    }
+
+
 }

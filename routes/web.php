@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/data/tasks', [TaskController::class, 'create'])->name('data.tasks');
     Route::put('/data/tasks', [TaskController::class, 'update'])->name('data.tasks');
     Route::delete('/data/tasks', [TaskController::class, 'delete'])->name('data.tasks');
+
+    Route::post('/data/tasks/pdf', [TaskController::class, 'generatePdfData'])->name('data.tasks');
+
+    
 });
 
 require __DIR__.'/auth.php';
