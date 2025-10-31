@@ -2,63 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function list()
     {
-        //
+        $tasks = Task::with(['project', 'user'])
+            ->latest()
+            ->get();
+
+        return response()->json($tasks, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function listByUser(Request $request)
     {
-        //
+        $tasks = Task::where('user_id', $request->user_id)
+            ->with(['project', 'user'])
+            ->latest()
+            ->get();
+
+        return response()->json($tasks, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        //
+        $data = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'user_id' => 'required|exists:users,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_at' => 'required|date',
+            'end_at' => 'required|date|after:start_at',
+        ]);
+
+        $task = Task::create($data);
+
+        return response()->json($task, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request)
     {
-        //
+        $data = $request->validate([
+            'id' => 'required|exists:tasks,id',
+            'start_at' => 'sometimes|date',
+            'end_at' => 'sometimes|date|after:start_at',
+        ]);
+
+        if (isset($data['start_at']) && isset($data['end_at'])) {
+            if ($data['end_at'] <= $data['start_at']) {
+                return response()->json(['error' => 'La fecha fin debe ser posterior a la fecha inicio'], 422);
+            }
+        }
+
+        $task = Task::findOrFail($data['id']);
+        $task->update($data);
+
+        return response()->json($task);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function delete(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'id' => 'required|exists:tasks,id',
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        Task::destroy($request->id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['message' => 'Tarea eliminada']);
     }
 }

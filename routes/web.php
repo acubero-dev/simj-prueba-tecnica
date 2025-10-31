@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/data/projects', [ProjectController::class, 'delete'])->middleware([IsAdmin::class])->name('data.projects');
 
     Route::get('/data/tasks', [TaskController::class, 'list'])->name('data.tasks');
+    Route::post('/data/tasks/user', [TaskController::class, 'listByUser'])->name('data.tasks');
     Route::post('/data/tasks', [TaskController::class, 'create'])->name('data.tasks');
     Route::put('/data/tasks', [TaskController::class, 'update'])->name('data.tasks');
     Route::delete('/data/tasks', [TaskController::class, 'delete'])->name('data.tasks');

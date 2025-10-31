@@ -53071,3 +53071,17 @@ a.text-muted:hover {
 .fc-highlight {
     background-color: rgba(59, 130, 246, 0.1) !important;
 }
+
+
+.select2-container--default .select2-selection--single {
+  height: 100% !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  top: 5px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: unset !important;
+}
+

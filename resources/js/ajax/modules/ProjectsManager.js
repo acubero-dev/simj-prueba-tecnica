@@ -3,20 +3,19 @@ export function ProjectsManager() {
 
     const btnCreateProject = document.getElementById("btn-create-project");
 
-    const modalElement = document.getElementById("modal-create-project");
-    const modal = new bootstrap.Modal(modalElement);
+    const projestsModalElement = document.getElementById("modal-create-project");
+    const projectsModal = new bootstrap.Modal(projestsModalElement);
     const projectForm = document.getElementById("form-create-project");
 
     // Abrir modal para crear proyecto
     btnCreateProject.addEventListener("click", () => {
         projectForm.reset();
-        modal.show();
+        projectsModal.show();
     });
 
     // Cerrar modal de crear proyecto
     projectForm.addEventListener("reset", () => {
-        projectForm.reset();
-        modal.hide();
+        projectsModal.hide();
     });
 
     // Guardar proyecto
@@ -41,7 +40,7 @@ export function ProjectsManager() {
         })
             .then((res) => res.json())
             .then(() => {
-                modal.hide();
+                projectsModal.hide();
                 projectForm.reset();
                 loadProjects();
                 window.Toast?.fire({
@@ -121,8 +120,8 @@ export function ProjectsManager() {
             `;
         }
 
-        div.setAttribute("data-project-id", project.id);
-        div.setAttribute("data-project-name", project.name);
+        div.setAttribute("project_id", project.id);
+        div.setAttribute("project_name", project.name);
 
         arrastable(div);
         projectsContainer.appendChild(div);
@@ -134,8 +133,8 @@ export function ProjectsManager() {
 
         element.addEventListener("dragstart", (e) => {
             e.dataTransfer.effectAllowed = "move";
-            e.dataTransfer.setData("project-id", project.id);
-            e.dataTransfer.setData("project-name", project.name);
+            e.dataTransfer.setData("project_id", element.getAttribute("project_id"));
+            e.dataTransfer.setData("project_name", element.getAttribute("project_name"));                    
             e.target.classList.add("dragging");
         });
 
@@ -156,7 +155,7 @@ export function ProjectsManager() {
                 document.getElementById("name").value = project.name;
                 document.getElementById("project_id").value = project.id;
 
-                modal.show();
+                projectsModal.show();
             });
     });
 

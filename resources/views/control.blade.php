@@ -79,15 +79,15 @@
         </div>
         <div class="modal-body">
           <form id="form-create-task">
-            <div class="mb-3">              
+            <div class="mb-3">   
               <label for="start_at" class="form-label">Inicio tarea</label>
-              <input type="datetime-local" class="form-control" id="start_at" required>
+              <input type="datetime-local" class="form-control" id="start_at" step="1800" required>
               
               <label for="description" class="form-label">Descripción</label>
               <input type="textarea" class="form-control" id="description" required>
               
               <label for="end_at" class="form-label">Fin tarea</label>
-              <input type="datetime-local" class="form-control" id="end_at" required>
+              <input type="datetime-local" class="form-control" id="end_at" step="1800" required>
             </div>
             <div class="flex justify-end space-x-2">
               <button type="submit" class="btn btn-primary">Guardar</button>
@@ -101,26 +101,26 @@
   <!-- Modal crear tarea -->
 
 <!-- Modal crear pdf -->
-  <div id="modal-create-pdf" class="modal fade" tabindex="-1" role="dialog">
+  <div id="modal-generate-pdf" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Opciones de informe</h5>
         </div>
         <div class="modal-body">
-          <form id="form-create-pdf">
+          <form id="form-generate-pdf">
             <div class="mb-3">              
               <label for="start_at" class="form-label">Fecha desde</label>
-              <input type="date-local" class="form-control" id="start_at">
+              <input type="date" class="form-control" id="start_at">
 
               <label for="end_at" class="form-label">Fecha hasta</label>
-              <input type="date-local" class="form-control" id="end_at">
+              <input type="date" class="form-control" id="end_at">
 
               <label for="project" class="form-label">Proyecto</label>
-              <select name="project" id="project"></select>
+              <select name="project" id="project" class="form-control"></select>
               
               <label for="user" class="form-label">Usuario</label>
-              <select name="user" id="user"></select>
+              <select name="user" id="user" class="form-control"></select>
             </div>
             <div class="flex justify-end space-x-2">
               <button type="submit" class="btn btn-primary">Generar</button>
