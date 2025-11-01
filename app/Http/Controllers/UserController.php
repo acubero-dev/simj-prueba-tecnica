@@ -11,10 +11,7 @@ class UserController extends Controller
 {
     public function list()
     {
-        $query = User::query();
-
-        // Paginación
-        $users = $query->orderBy('id', 'desc')->paginate(100);
+        $users = User::latest()->get();
 
         return response()->json($users, 200);
     }

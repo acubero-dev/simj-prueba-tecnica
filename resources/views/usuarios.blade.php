@@ -66,7 +66,7 @@
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <button type="button" id="btn-close-modal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="reset" id="btn-close-modal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           </div>
         </form>
       </div>

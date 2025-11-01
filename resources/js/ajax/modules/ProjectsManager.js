@@ -1,84 +1,71 @@
 export function ProjectsManager() {
     const projectsContainer = document.getElementById("projects");
 
-    const btnCreateProject = document.getElementById("btn-create-project");
-
     const projestsModalElement = document.getElementById("modal-create-project");
     const projectsModal = new bootstrap.Modal(projestsModalElement);
-    const projectForm = document.getElementById("form-create-project");
 
     // Abrir modal para crear proyecto
-    btnCreateProject.addEventListener("click", () => {
-        projectForm.reset();
+    $("#btn-create-project").on("click", function () {
+        $("#form-create-project")[0].reset();
         projectsModal.show();
     });
-
+    
     // Cerrar modal de crear proyecto
-    projectForm.addEventListener("reset", () => {
+    $("#form-create-project").on("reset", () => {
         projectsModal.hide();
     });
 
     // Guardar proyecto
-    projectForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+    $("#form-create-project").on("submit", function (event) {
+        event.preventDefault();
 
-        const id = e.target.project_id.value;
+        const id = event.target.project_id.value;
         const method = id ? "PUT" : "POST";
 
-        fetch("/data/projects", {
+        $.ajax({
+            url: "/data/projects",
             method: method,
             headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
             },
-            body: JSON.stringify({
+            data: {
                 id: id,
-                name: e.target.name.value,
-            }),
-        })
-            .then((res) => res.json())
-            .then(() => {
+                name: $(this).find("#name").val()
+            },
+            dataType: "json",
+            success: function() {
                 projectsModal.hide();
-                projectForm.reset();
+                $("#form-create-project")[0].reset();
                 loadProjects();
-                window.Toast?.fire({
-                    icon: "success",
-                    title: "Proyecto guardado",
-                });
-            })
-            .catch((e) => {
-                console.error(e);
-                window.Toast?.fire({
-                    icon: "error",
-                    title: "Error al guardar proyecto",
-                });
-            });
+                window.Toast.fire({icon: "success", title: "Proyecto guardado"});
+            },
+            error: function() {
+                window.Toast.fire({icon: "error", title: "Error al guardar proyecto"});
+            },
+        });
     });
 
-    // Cargar y mostrar projectos
-    const loadProjects = async () => {
+    // Cargar y mostrar proyectos
+    const loadProjects = () => {
         projectsContainer.innerHTML = ``;
-        let projects;
-        try {
-            const res = await fetch("/data/projects");
-            projects = await res.json();
-        } catch (e) {
-            console.error(e);
-            window.Toast?.fire({
-                icon: "error",
-                title: "Error al cargar proyectos",
-            });
-        }
+        
+        $.ajax({
+            url: "/data/projects",
+            method: "GET",
+            dataType: "json",
+            success: function(projects) {
+                if (projects.length === 0) {
+                    projectsContainer.innerHTML = `<p class="text-gray-500">No hay proyectos disponibles.</p>`;
+                    return;
+                }
 
-        if (projects.length === 0) {
-            projectsContainer.innerHTML = `<p class="text-gray-500">No hay proyectos disponibles.</p>`;
-            return;
-        }
-
-        projects.forEach((project) => {
-            card(project);
+                projects.forEach((project) => {
+                    card(project);
+                });
+            },
+            error: function() {
+                window.Toast.fire({icon: "error", title: "Error al cargar proyectos"});
+            }
         });
     };
 
@@ -143,23 +130,30 @@ export function ProjectsManager() {
         });
     };
 
-    // Editar proyecto con jquery
+    // Editar proyecto con jQuery
     $("#projects").on("click", ".btn-edit", function () {
         const id = $(this).data("id");
-        fetch(`/data/projects`)
-            .then((res) => res.json())
-            .then((json) => {
-                const project = json.find((p) => p.id == id);
+        
+        $.ajax({
+            url: "/data/projects",
+            method: "GET",
+            dataType: "json",
+            success: function(projects) {
+                const project = projects.find((p) => p.id == id);
                 if (!project) return;
 
-                document.getElementById("name").value = project.name;
-                document.getElementById("project_id").value = project.id;
+                $("#name").val(project.name);
+                $("#project_id").val(project.id);
 
                 projectsModal.show();
-            });
+            },
+            error: function() {
+                window.Toast.fire({icon: "error", title: "Error cargando proyectos"});
+            }
+        });
     });
 
-    // Borrar projecto con jquery
+    // Borrar proyecto con jQuery
     $("#projects").on("click", ".btn-delete", function () {
         const id = $(this).data("id");
 
@@ -173,23 +167,24 @@ export function ProjectsManager() {
         }).then((result) => {
             if (!result.isConfirmed) {return}
 
-            fetch("/data/projects", {
+            $.ajax({
+                url: "/data/projects",
                 method: "DELETE",
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
                 },
-                body: JSON.stringify({ id }),
-            })
-                .then((res) => res.json())
-                .then(() => {
+                data: {
+                    id: id
+                },
+                dataType: "json",
+                success: function() {
                     loadProjects();
-                    window.Toast?.fire({icon: "success",title: "Proyecto eliminado"});
-                })
-                .catch((e) => {
-                    console.error(e);
+                    window.Toast.fire({icon: "success",title: "Proyecto eliminado"});
+                },
+                error: function() {
                     window.Swal.fire({icon: "error", title: "Error al eliminar proyecto"});
-                });
+                }
+            });
         });
     });
 

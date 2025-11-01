@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
     //  Crear tabla de usuarios con DataTables
     const table = $('#users-table').DataTable({
         ajax: {
-            url: '/data/users',
-            dataSrc: 'data'
+            url: "/data/users",
+            dataSrc: ""
         },
         columns: [
             { data: 'id' },
@@ -22,36 +22,38 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             {
                 data: null,
-                render: (data, type, row) => `
+                render: (row) => `
                     <button class="btn btn-sm btn-edit btn-primary" data-id="${row.id}">Editar</button>
                     <button class="btn btn-sm btn-danger btn-delete" data-id="${row.id}">Eliminar</button>
                 `
             }
         ],
         language: {
-            url: '/datatables/es-ES.json',
+            url: "/datatables/es-ES.json",
         },
     });
 
     // Abrir modal para crear usuario
-    document.getElementById("btn-add-user").addEventListener("click", () => {
+    $("#btn-add-user").on("click", function () {  
         userForm.reset();
-        document.getElementById("user_id").value = "";
+        $("#user_id").value = "";
         modal.show();
     });
 
     // Cerrar modal
-    document.getElementById("btn-close-modal").addEventListener("click", () => {
+    $("#userForm").on("reset", function () {
         modal.hide();
     });
 
     // Editar usuario
     $('#users-table').on('click', '.btn-edit', function () {
         const id = $(this).data('id');
-        fetch(`/data/users`)
-            .then(res => res.json())
-            .then(json => {
-                const user = json.data.find(u => u.id == id);
+        $.ajax({
+            url: "/data/users",
+            method: "GET",
+            dataType: "json",
+            success: function(response) {
+                const user = response.find(u => u.id == id);
                 if (!user) return;
 
                 document.getElementById("user_id").value = user.id;
@@ -60,38 +62,42 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("is_admin").checked = user.is_admin;
                 
                 modal.show();
-            });
+            },
+            error: function(error) {
+                console.error('Error:', error);
+            }
+        });
     });
 
     // Guardar usuario
-    userForm.addEventListener("submit", function (e) {
-        e.preventDefault();
+    $("#userForm").on("submit", function (event) {
+        event.preventDefault();
 
         const id = document.getElementById("user_id").value;
         const method = id ? "PUT" : "POST";
 
-        fetch("/data/users", {
+        $.ajax({
+            url: "/data/users",
             method: method,
             headers: {
-                "Content-Type": "application/json",
                 "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify({
+            data: {
                 id: id,
                 name: document.getElementById("name").value,
                 email: document.getElementById("email").value,
                 password: document.getElementById("password").value,
                 is_admin: document.getElementById("is_admin").checked ? 1 : 0
-            })
-        })
-        .then(res => res.json())
-        .then(() => {
-            modal.hide();
-            table.ajax.reload();
-            window.Toast?.fire({ icon: "success", title: "Usuario guardado" });
-        })
-        .catch(() => {
-            window.Toast?.fire({ icon: "error", title: "Error al guardar usuario" });
+            },
+            dataType: "json",
+            success: function() {
+                modal.hide();
+                table.ajax.reload();
+                window.Toast?.fire({ icon: "success", title: "Usuario guardado" });
+            },
+            error: function() {
+                window.Toast?.fire({ icon: "error", title: "Error al guardar usuario" });
+            }
         });
     });
 
@@ -108,22 +114,23 @@ document.addEventListener("DOMContentLoaded", function () {
             cancelButtonText: "Cancelar",
         }).then(result => {
             if (result.isConfirmed) {
-                fetch("/data/users", {
+                $.ajax({
+                    url: "/data/users",
                     method: "DELETE",
                     headers: {
-                        "Content-Type": "application/json",
                         "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ id })
-                })
-                .then(res => res.json())
-                .then(() => {
-                    table.ajax.reload();
-                    window.Toast?.fire({ icon: "success", title: "Usuario eliminado" });
-                })
-                .catch((e) => {
-                    console.error(e);
-                    window.Swal.fire({ icon: "error", title: "Error al eliminar usuario" });
+                    data: {
+                        id: id
+                    },
+                    dataType: "json",
+                    success: function() {
+                        table.ajax.reload();
+                        window.Toast?.fire({ icon: "success", title: "Usuario eliminado" });
+                    },
+                    error: function() {
+                        window.Swal.fire({ icon: "error", title: "Error al eliminar usuario" });
+                    }
                 });
             }
         });
