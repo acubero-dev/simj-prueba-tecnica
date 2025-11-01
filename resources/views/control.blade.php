@@ -114,10 +114,10 @@
           <form id="form-generate-pdf">
             <div class="mb-3">              
               <label for="start_at" class="form-label">Fecha desde</label>
-              <input type="date" class="form-control" id="start_at">
+              <input type="date" class="form-control" id="start_at" required>
 
               <label for="end_at" class="form-label">Fecha hasta</label>
-              <input type="date" class="form-control" id="end_at">
+              <input type="date" class="form-control" id="end_at" required>
 
               <label for="project" class="form-label">Proyecto</label>
               <select name="project" id="project" required></select>
