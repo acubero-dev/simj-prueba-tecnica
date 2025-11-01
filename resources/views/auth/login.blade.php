@@ -39,7 +39,7 @@
             </div>
 
             <!-- Links -->
-            <div class="flex justify-between mt-4 text-sm">
+            {{-- <div class="flex justify-between mt-4 text-sm">
                 @if (Route::has('password.request'))
                     <a class="underline text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
                         {{ __('¿Olvidaste tu contraseña?') }}
@@ -51,7 +51,7 @@
                         {{ __('¿No tienes cuenta? Regístrate') }}
                     </a>
                 @endif
-            </div>
+            </div> --}}
         </form>
     </div>
 </x-guest-layout>
