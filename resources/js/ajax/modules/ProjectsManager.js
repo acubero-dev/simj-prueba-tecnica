@@ -40,6 +40,9 @@ export function ProjectsManager() {
                 $("#form-create-project")[0].reset();
                 $("#project_id").val("");
                 loadProjects();
+
+                CalendarManager();
+
                 window.Toast.fire({icon: "success", title: "Proyecto guardado"});
             },
             error: function() {

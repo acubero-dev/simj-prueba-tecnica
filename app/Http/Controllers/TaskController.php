@@ -31,7 +31,6 @@ class TaskController extends Controller
         $data = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_at' => 'required|date',
             'end_at' => 'required|date|after:start_at',

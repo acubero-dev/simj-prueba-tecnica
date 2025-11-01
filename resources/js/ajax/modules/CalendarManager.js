@@ -92,20 +92,6 @@ export function CalendarManager() {
             dragScroll: true,
             editable: true,
 
-            drop: function(info) {
-                // info.date tiene la fecha/hora exacta donde soltaste
-                const dropDate = info.date;
-                const project_id = info.draggedEl.dataset.projectId;
-                const title = info.draggedEl.dataset.projectName;
-                
-                console.log('Fecha donde soltaste:', dropDate);
-                console.log('Project ID:', project_id);
-                
-                // Hacer lo que necesites con estos datos
-                $(taskForm).data("project_id", project_id);
-                $(taskForm).data("start_date", dropDate);
-                taskModal.show();
-            },
 
             eventDrop: function(info) {
                 updateTaskTime(info.event);
@@ -166,7 +152,7 @@ export function CalendarManager() {
                 tasks.forEach(task => {
                     calendar.addEvent({
                         id: task.id,
-                        title: task.title,
+                        title: task.project?.name,
                         start: task.start_at,
                         end: task.end_at,
                         color: '#3b82f6',
@@ -229,7 +215,6 @@ export function CalendarManager() {
         e.preventDefault();
 
         const project_id = e.originalEvent.dataTransfer.getData("project_id");
-        const title = e.originalEvent.dataTransfer.getData("project_name");
         const user_id = $("#users").val();
 
         // Obtener fecha y hora del punto donde se soltó
@@ -238,7 +223,6 @@ export function CalendarManager() {
         // Establecemos en el formulario los datos recogidos
         $(taskForm).data("project_id", project_id);
         $(taskForm).data("user_id", user_id);
-        $(taskForm).data("title", title);
 
         // Prellenar el formulario con fecha y hora
         $(taskForm).find("#task_date").val(dropInfo.date);
@@ -314,7 +298,6 @@ export function CalendarManager() {
         const data = {
             project_id: $(this).data("project_id"),
             user_id: $(this).data("user_id"),
-            title: $(this).data("title"),
             description: $(this).find("#description").val(),
             start_at: start_at,
             end_at: end_at
