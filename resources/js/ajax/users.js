@@ -23,8 +23,14 @@ document.addEventListener("DOMContentLoaded", function () {
             {
                 data: null,
                 render: (row) => `
-                    <button class="btn btn-sm btn-edit btn-primary" data-id="${row.id}">Editar</button>
-                    <button class="btn btn-sm btn-danger btn-delete" data-id="${row.id}">Eliminar</button>
+                    <button class="btn btn-sm btn-outline-primary btn-edit flex items-center gap-1" data-id="${row.id}">
+                        <i class="fas fa-edit text-xs"></i>
+                        Editar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger btn-delete flex items-center gap-1" data-id="${row.id}">
+                        <i class="fas fa-trash text-xs"></i>
+                        Borrar
+                    </button>
                 `
             }
         ],
