@@ -79,15 +79,18 @@
         </div>
         <div class="modal-body">
           <form id="form-create-task">
-            <div class="mb-3">   
-              <label for="start_at" class="form-label">Inicio tarea</label>
-              <input type="datetime-local" class="form-control" id="start_at" step="1800" required>
+            <div class="mb-3"> 
+              <label for="task_date" class="form-label">Fecha</label>
+              <input type="date" class="form-control" id="task_date" required>
+              
+              <label for="start_time" class="form-label">Hora inicio</label>
+              <input type="time" class="form-control" id="start_time" min="08:00" max="19:00" required>
+              
+              <label for="end_time" class="form-label">Hora fin</label>
+              <input type="time" class="form-control" id="end_time" min="08:00" max="19:00" required>
               
               <label for="description" class="form-label">Descripción</label>
-              <input type="textarea" class="form-control" id="description" required>
-              
-              <label for="end_at" class="form-label">Fin tarea</label>
-              <input type="datetime-local" class="form-control" id="end_at" step="1800" required>
+              <textarea class="form-control" id="description" rows="1" required></textarea>
             </div>
             <div class="flex justify-end space-x-2">
               <button type="submit" class="btn btn-primary">Guardar</button>

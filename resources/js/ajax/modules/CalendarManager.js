@@ -91,6 +91,21 @@ export function CalendarManager() {
             dragScroll: true,
             editable: true,
 
+            drop: function(info) {
+                // info.date tiene la fecha/hora exacta donde soltaste
+                const dropDate = info.date;
+                const project_id = info.draggedEl.dataset.projectId;
+                const title = info.draggedEl.dataset.projectName;
+                
+                console.log('Fecha donde soltaste:', dropDate);
+                console.log('Project ID:', project_id);
+                
+                // Hacer lo que necesites con estos datos
+                $(taskForm).data("project_id", project_id);
+                $(taskForm).data("start_date", dropDate);
+                taskModal.show();
+            },
+
             eventDrop: function(info) {
                 updateTaskTime(info.event);
             },
@@ -196,7 +211,18 @@ export function CalendarManager() {
         });
     };
 
-    // Logica de arrastrar del calendario
+    // Logica de arrastrar al calendario
+    // Cambiar estilo del cursor al pasar por encima
+    $(calendarEl).on("dragover", function(e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = "move";
+    });
+
+    // Cerrar el modal de tareas
+    $(taskForm).on("reset", function() {
+        taskModal.hide();
+    });
+
     // Recoger los datos al soltar la tarjeta
     $(calendarEl).on("drop", function(e) {
         e.preventDefault();
@@ -205,36 +231,96 @@ export function CalendarManager() {
         const title = e.originalEvent.dataTransfer.getData("project_name");
         const user_id = $("#users").val();
 
+        // Obtener fecha y hora del punto donde se soltó
+        const dropInfo = getDateTimeFromCalendar(e.originalEvent);
+
         // Establecemos en el formulario los datos recogidos
         $(taskForm).data("project_id", project_id);
         $(taskForm).data("user_id", user_id);
         $(taskForm).data("title", title);
 
+        // Prellenar el formulario con fecha y hora
+        $(taskForm).find("#task_date").val(dropInfo.date);
+        $(taskForm).find("#start_time").val(dropInfo.time);
+
+        // Calcular hora de fin (1 hora después)
+        const [hours, minutes] = dropInfo.time.split(':').map(Number);
+        const endHour = (hours + 1) % 24;
+        const endTime = `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        $(taskForm).find("#end_time").val(endTime);
+
         taskModal.show();
     });
 
-    // Cambiar estilo del cursor al pasar por encima
-    $(calendarEl).on("dragover", function(e) {
-        e.preventDefault();
-        e.originalEvent.dataTransfer.dropEffect = "move";
-    });
+    // Función para obtener fecha y hora usando la API de FullCalendar
+    const getDateTimeFromCalendar = (event) => {
+        try {
+            // Obtener el elemento de tiempo más cercano al cursor
+            const timeSlot = document.elementFromPoint(event.clientX, event.clientY);
+            const slotEl = timeSlot.closest('.fc-timegrid-slot');
+            
+            if (!slotEl) { throw new Error('Slot no encontrado'); }
 
-    // Logica para cerrar el modal
-    $(taskForm).on("reset", function() {
-        taskModal.hide();
-    });
+            // Obtener la hora del slot
+            const timeAttr = slotEl.getAttribute('data-time');
+            if (timeAttr) {
+                const time = timeAttr.substring(0, 5); // Formato HH:mm
+                
+                // Obtener la fecha actual del calendario
+                const currentDate = calendar.getDate();
+                const date = currentDate.toISOString().split('T')[0];
+                
+                return { date, time };
+            }
+            
+            
+            // Si no encontramos el slot, usar método alternativo
+            
+            
+        } catch (error) {
+            window.Toast.fire({icon: "error", title: "Error obtener datos"});
+        }
+    };
 
     // Guardar tarea
     $(taskForm).on("submit", function(event) {
         event.preventDefault();
+
+        const taskDate = $(this).find("#task_date").val();
+        const startTime = $(this).find("#start_time").val();
+        const endTime = $(this).find("#end_time").val();
+
+        // Validar que la hora de fin sea posterior a la de inicio
+        if (startTime >= endTime) {
+            window.Toast?.fire({
+                icon: "error",
+                title: "La hora de fin debe ser posterior a la de inicio"
+            });
+            return;
+        }
+
+        // Validar que no sea fin de semana
+        const dateObj = new Date(taskDate);
+        const day = dateObj.getDay();
+        if (day === 0 || day === 6) {
+            window.Toast?.fire({
+                icon: "error",
+                title: "No se pueden crear tareas los fines de semana"
+            });
+            return;
+        }
+
+        // Construir fecha para MySQL
+        const start_at = `${taskDate} ${startTime}:00`;
+        const end_at = `${taskDate} ${endTime}:00`;
 
         const data = {
             project_id: $(this).data("project_id"),
             user_id: $(this).data("user_id"),
             title: $(this).data("title"),
             description: $(this).find("#description").val(),
-            start_at: $(this).find("#start_at").val(),
-            end_at: $(this).find("#end_at").val(),
+            start_at: start_at,
+            end_at: end_at
         };
 
         $.ajax({
