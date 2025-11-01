@@ -2,6 +2,7 @@ import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { ProjectsManager } from "./ProjectsManager";
 
 export function CalendarManager() {
     const calendarEl = document.getElementById("calendar");
@@ -331,6 +332,8 @@ export function CalendarManager() {
 
                 taskModal.hide();
                 taskForm.reset();
+
+                ProjectsManager();
 
                 window.Toast.fire({icon: "success", title: "Tarea creada correctamente"});
             },
