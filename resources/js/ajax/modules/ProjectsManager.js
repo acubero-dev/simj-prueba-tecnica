@@ -1,3 +1,5 @@
+import { CalendarManager } from "./CalendarManager";
+
 export function ProjectsManager() {
     const projectsContainer = document.getElementById("projects");
 
@@ -180,6 +182,11 @@ export function ProjectsManager() {
                 dataType: "json",
                 success: function() {
                     loadProjects();
+
+                    // Refrescamos el calendario para quitar las tareas de este proyecto de la interfaz
+                    CalendarManager();
+
+                    console.log("se supone que resetea el calendario");
                     window.Toast.fire({icon: "success",title: "Proyecto eliminado"});
                 },
                 error: function() {
