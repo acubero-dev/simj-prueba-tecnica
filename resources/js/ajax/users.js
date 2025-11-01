@@ -99,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             success: function() {
                 modal.hide();
                 table.ajax.reload();
+                userForm.reset();
                 window.Toast?.fire({ icon: "success", title: "Usuario guardado" });
             },
             error: function() {
