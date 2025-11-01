@@ -257,28 +257,24 @@ export function CalendarManager() {
         try {
             // Obtener el elemento de tiempo más cercano al cursor
             const timeSlot = document.elementFromPoint(event.clientX, event.clientY);
-            const slotEl = timeSlot.closest('.fc-timegrid-slot');
+            const slotEl = timeSlot.closest(".fc-timegrid-slot");
             
-            if (!slotEl) { throw new Error('Slot no encontrado'); }
+            if (!slotEl) { throw new Error("Slot no encontrado"); }
 
             // Obtener la hora del slot
-            const timeAttr = slotEl.getAttribute('data-time');
-            if (timeAttr) {
-                const time = timeAttr.substring(0, 5); // Formato HH:mm
-                
-                // Obtener la fecha actual del calendario
-                const currentDate = calendar.getDate();
-                const date = currentDate.toISOString().split('T')[0];
-                
-                return { date, time };
-            }
+            const timeAttr = slotEl.getAttribute("data-time");
+            const time = timeAttr.substring(0, 5); // Formato HH:mm
             
+            // Obtener la fecha actual del calendario
+            const currentDate = calendar.getDate();
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = currentDate.getDate().toString().padStart(2, '0');
+            const date = `${year}-${month}-${day}`;
             
-            // Si no encontramos el slot, usar método alternativo
-            
-            
+            return { date, time };
         } catch (error) {
-            window.Toast.fire({icon: "error", title: "Error obtener datos"});
+            window.Toast.fire({icon: "error", title: error.message});
         }
     };
 
