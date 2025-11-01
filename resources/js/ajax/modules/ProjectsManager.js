@@ -36,6 +36,7 @@ export function ProjectsManager() {
             success: function() {
                 projectsModal.hide();
                 $("#form-create-project")[0].reset();
+                $("#project_id").val("");
                 loadProjects();
                 window.Toast.fire({icon: "success", title: "Proyecto guardado"});
             },
