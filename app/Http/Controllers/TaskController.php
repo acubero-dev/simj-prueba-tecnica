@@ -7,15 +7,6 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function list()
-    {
-        $tasks = Task::with(['project', 'user'])
-            ->latest()
-            ->get();
-
-        return response()->json($tasks, 200);
-    }
-
     public function listByUser(Request $request)
     {
         $tasks = Task::where('user_id', $request->user_id)
