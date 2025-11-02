@@ -41,7 +41,7 @@ export function ProjectsManager() {
                 $("#project_id").val("");
                 loadProjects();
 
-                CalendarManager();
+                refreshCalendar();
 
                 window.Toast.fire({icon: "success", title: "Proyecto guardado"});
             },
@@ -74,6 +74,8 @@ export function ProjectsManager() {
             }
         });
     };
+
+
 
     // Creación de la tarjeta
     const card = (project) => {
@@ -187,9 +189,8 @@ export function ProjectsManager() {
                     loadProjects();
 
                     // Refrescamos el calendario para quitar las tareas de este proyecto de la interfaz
-                    CalendarManager();
+                    refreshCalendar();
 
-                    console.log("se supone que resetea el calendario");
                     window.Toast.fire({icon: "success",title: "Proyecto eliminado"});
                 },
                 error: function() {
@@ -200,4 +201,7 @@ export function ProjectsManager() {
     });
 
     loadProjects();
+
+    
+    window.refreshProjects = loadProjects;
 }

@@ -2,7 +2,6 @@ import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { ProjectsManager } from "./ProjectsManager";
 
 export function CalendarManager() {
     const calendarEl = document.getElementById("calendar");
@@ -198,6 +197,14 @@ export function CalendarManager() {
         });
     };
 
+    // Refrescar tareas calendario
+    const refreshCalendar = () => {
+        loadTasksUser(calendar, $("#users").val());
+    };
+
+    // Hacerla global
+    window.refreshCalendar = refreshCalendar;
+
     // Logica de arrastrar al calendario
     // Cambiar estilo del cursor al pasar por encima
     $(calendarEl).on("dragover", function(e) {
@@ -316,7 +323,7 @@ export function CalendarManager() {
                 taskModal.hide();
                 taskForm.reset();
 
-                ProjectsManager();
+                window.refreshProjects();
 
                 window.Toast.fire({icon: "success", title: "Tarea creada correctamente"});
             },
