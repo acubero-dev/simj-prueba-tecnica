@@ -1,5 +1,3 @@
-import { CalendarManager } from "./CalendarManager";
-
 export function ProjectsManager() {
     const projectsContainer = document.getElementById("projects");
 
@@ -202,6 +200,6 @@ export function ProjectsManager() {
 
     loadProjects();
 
-    
+
     window.refreshProjects = loadProjects;
 }

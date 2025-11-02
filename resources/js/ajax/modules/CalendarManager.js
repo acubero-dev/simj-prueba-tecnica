@@ -251,7 +251,7 @@ export function CalendarManager() {
             const timeSlot = document.elementFromPoint(event.clientX, event.clientY);
             const slotEl = timeSlot.closest(".fc-timegrid-slot");
             
-            if (!slotEl) { throw new Error("Slot no encontrado"); }
+            if (!slotEl) { throw new Error("Casilla no encontrada, pruebe soltando en la hora directamente"); }
 
             // Obtener la hora del slot
             const timeAttr = slotEl.getAttribute("data-time");
