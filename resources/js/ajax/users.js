@@ -69,8 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 modal.show();
             },
-            error: function(error) {
-                console.error('Error:', error);
+            error: function() {
+                window.Swal.fire({ icon: "error", title: "Error al obtener los datos" });
             }
         });
     });
@@ -100,10 +100,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 modal.hide();
                 table.ajax.reload();
                 userForm.reset();
-                window.Toast?.fire({ icon: "success", title: "Usuario guardado" });
+                document.getElementById("user_id").value = "";
+                window.Toast.fire({ icon: "success", title: "Usuario guardado" });
             },
             error: function() {
-                window.Toast?.fire({ icon: "error", title: "Error al guardar usuario" });
+                window.Toast.fire({ icon: "error", title: "Error al guardar usuario" });
             }
         });
     });
@@ -133,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     dataType: "json",
                     success: function() {
                         table.ajax.reload();
-                        window.Toast?.fire({ icon: "success", title: "Usuario eliminado" });
+                        window.Toast.fire({ icon: "success", title: "Usuario eliminado" });
                     },
                     error: function() {
                         window.Swal.fire({ icon: "error", title: "Error al eliminar usuario" });
