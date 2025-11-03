@@ -11,9 +11,8 @@ class ProjectController extends Controller
     public function list()
     {
         $projects = Project::with('user')
-            ->withMax('tasks', 'created_at') // Obtener la fecha de la última tarea creada
-            ->orderByDesc('tasks_max_created_at') // Ordenar por última tarea primero
-            ->orderByDesc('created_at') // Si no tiene tareas, ordenar por fecha de creación del proyecto
+            ->withMax('tasks', 'created_at')
+            ->orderByRaw('CASE WHEN tasks_max_created_at IS NOT NULL THEN tasks_max_created_at ELSE created_at END DESC')
             ->get();
 
         return response()->json($projects, 200);
