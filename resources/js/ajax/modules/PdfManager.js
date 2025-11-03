@@ -70,13 +70,13 @@ export function PdfManager() {
         pdfModal.hide();
     });
 
-    // Convertir minutos a formato legible
+    // Formatear duración
     const formatDuration = (minutes) => {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
-        if (hours === 0) return `${mins}m`;
-        if (mins === 0) return `${hours}h`;
-        return `${hours}h ${mins}m`;
+        if (hours === 0) return `${Math.round(mins)}m`;
+        if (mins === 0) return `${Math.round(hours)}h`;
+        return `${Math.round(hours)}h ${Math.round(mins)}m`;
     };
 
     // PDF con tabla de proyectos
