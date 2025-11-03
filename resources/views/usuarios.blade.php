@@ -73,6 +73,11 @@
     </div>
   </div>
   <!-- Modal Crear/Editar -->
+
+  <!-- Variables JS -->
+  <script>
+      const currentUserId = {{ auth()->id() }};
+  </script>
   
   <!-- Vite JS -->
   @vite(['resources/js/ajax/users.js'])

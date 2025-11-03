@@ -27,10 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         <i class="fas fa-edit text-xs"></i>
                         Editar
                     </button>
-                    <button class="btn btn-sm btn-outline-danger btn-delete flex items-center gap-1" data-id="${row.id}">
-                        <i class="fas fa-trash text-xs"></i>
-                        Borrar
-                    </button>
+                    ${row.id !== currentUserId ? `
+                        <button class="btn btn-sm btn-outline-danger btn-delete flex items-center gap-1" data-id="${row.id}">
+                            <i class="fas fa-trash text-xs"></i>
+                            Borrar
+                        </button>
+                    ` : ''}
                 `
             }
         ],
@@ -80,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         const id = document.getElementById("user_id").value;
+
         const method = id ? "PUT" : "POST";
 
         $.ajax({
@@ -112,6 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Eliminar usuario
     $('#users-table').on('click', '.btn-delete', function () {
         const id = $(this).data('id');
+
+        // Verificar si el usuario a eliminar es el usuario activo
+        if (id == currentUserId) {
+            throw new Error(
+                window.Swal.fire({ icon: "error", title: "No puedes eliminar a tu usuario" })
+            );
+        };
 
         window.Swal.fire({
             title: "¿Seguro que quieres eliminar este usuario?",

@@ -65,6 +65,14 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($data['id']);
+
+        // Verificar si el usuario a eliminar es el usuario activo
+        if ($user->id === auth()->id()) {
+            return response()->json([
+                'error' => 'No puedes eliminar tu propio usuario.'
+            ], 403);
+        }
+
         $user->delete();
 
         return response()->json(['message' => 'Usuario eliminado correctamente.']);
