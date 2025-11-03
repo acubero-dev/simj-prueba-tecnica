@@ -91,10 +91,10 @@ Antes de comenzar, asegúrate de tener las siguientes dependencias instaladas en
     php artisan serve
     ```
 
-    En otra terminal, compila los archivos del frontend:
+    En otra terminal, ejecuta para cargar los scripts del frontend:
 
     ```bash
-    npm run build
+    npm run dev
     ```
 
     Esto iniciará la aplicación en http://localhost:8000
